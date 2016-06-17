@@ -39,14 +39,14 @@ func iterateMasksLinear(n int, base byte, digits []byte, f func([]byte)) {
 
 type Context interface{}
 
-func EnumerateWords(n int, base byte, startDigits []byte, newContext func(int) Context, f func([]byte, Context)) {
+func EnumerateWords(n int, base byte, startDigits []byte, newContext func() Context, f func([]byte, Context)) {
 	if startDigits != nil && len(startDigits) != n {
 		panic("wrong startDigits length")
 	}
 
 	threadExp := int(math.Ceil(math.Log2(float64(runtime.GOMAXPROCS(0)))))
 	if n < threadExp+2 {
-		bufs := newContext(n)
+		bufs := newContext()
 		iterateMasksLinear(n, base, startDigits, func(s []byte) { f(s, bufs) })
 		return
 	}
@@ -59,7 +59,7 @@ func EnumerateWords(n int, base byte, startDigits []byte, newContext func(int) C
 		copy(digits[remN:], suffix)
 
 		wg.Add(1)
-		bufs := newContext(n)
+		bufs := newContext()
 		go func() {
 			iterateMasksLinear(remN, base, digits[:remN], func(_ []byte) {
 				f(digits, bufs)
