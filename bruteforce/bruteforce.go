@@ -4,6 +4,8 @@ import (
 	"../enumerator"
 	"../words"
 	"fmt"
+	"gopkg.in/alecthomas/kingpin.v2"
+	"log"
 	"time"
 )
 
@@ -17,11 +19,26 @@ func NewBuffers(n int) enumerator.Context {
 	return result
 }
 
+var resumeFromRepr = kingpin.Arg("resumeFrom", "Word to resume enumeration from").String()
+
 func main() {
-	for length := 1; ; length++ {
+	kingpin.Parse()
+
+	startFrom := []byte{0, 0}
+	if *resumeFromRepr != "" {
+		startFrom = words.FromRepr(*resumeFromRepr)
+		log.Printf("Resumed from %s\n", *resumeFromRepr)
+	}
+
+	for length := len(startFrom); ; length++ {
+		var startDigits []byte
+		if length == len(startFrom) {
+			startDigits = startFrom
+		}
+
 		fmt.Println("length =", length)
 		start := time.Now()
-		enumerator.EnumerateWords(length, 2, NewBuffers, func(s []byte, bufs enumerator.Context) {
+		enumerator.EnumerateWords(length, 2, startDigits, NewBuffers, func(s []byte, bufs enumerator.Context) {
 			l := words.CountDifferentLyndonWords(s)
 			z := words.CountLz(s, &bufs.(*Buffers).LzBuffers)
 			if l > z {

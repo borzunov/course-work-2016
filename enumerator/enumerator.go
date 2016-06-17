@@ -1,7 +1,6 @@
 package enumerator
 
 import (
-	"log"
 	"math"
 	"runtime"
 	"sync"
@@ -17,7 +16,7 @@ func iterateMasksLinear(n int, base byte, digits []byte, f func([]byte)) {
 		digits = make([]byte, n)
 	}
 	if len(digits) != n {
-		log.Fatalln("wrong digit buffer length")
+		panic("wrong digit buffer length")
 	}
 
 	for {
@@ -40,11 +39,15 @@ func iterateMasksLinear(n int, base byte, digits []byte, f func([]byte)) {
 
 type Context interface{}
 
-func EnumerateWords(n int, base byte, newContext func(int) Context, f func([]byte, Context)) {
+func EnumerateWords(n int, base byte, startDigits []byte, newContext func(int) Context, f func([]byte, Context)) {
+	if startDigits != nil && len(startDigits) != n {
+		panic("wrong startDigits length")
+	}
+
 	threadExp := int(math.Ceil(math.Log2(float64(runtime.GOMAXPROCS(0)))))
 	if n < threadExp+2 {
 		bufs := newContext(n)
-		iterateMasksLinear(n, base, nil, func(s []byte) { f(s, bufs) })
+		iterateMasksLinear(n, base, startDigits, func(s []byte) { f(s, bufs) })
 		return
 	}
 
@@ -52,6 +55,7 @@ func EnumerateWords(n int, base byte, newContext func(int) Context, f func([]byt
 	iterateMasksLinear(threadExp, base, nil, func(suffix []byte) {
 		remN := n - threadExp
 		digits := make([]byte, n)
+		copy(digits, startDigits)
 		copy(digits[remN:], suffix)
 
 		wg.Add(1)
