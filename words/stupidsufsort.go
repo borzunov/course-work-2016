@@ -24,7 +24,7 @@ func (p suffixInfo) Less(j1, j2 int) bool {
 	return s1 > s2
 }
 
-func stupidSufSort(s []byte) []int {
+func StupidSufSort(s []byte) []int {
 	info := suffixInfo{append(s, 0), make([]int, len(s))}
 	for i := range info.suffixes {
 		info.suffixes[i] = i

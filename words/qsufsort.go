@@ -26,16 +26,16 @@ package words
 
 import "sort"
 
-type qsufsortBuffers struct {
+type QSufSortBuffers struct {
 	sa, inv []int
 }
 
-func (bufs *qsufsortBuffers) Make(n int) {
+func (bufs *QSufSortBuffers) Make(n int) {
 	bufs.sa = make([]int, n)
 	bufs.inv = make([]int, n)
 }
 
-func qsufsort(data []byte, bufs *qsufsortBuffers) []int {
+func QSufSort(data []byte, bufs *QSufSortBuffers) []int {
 	// initial sorting by first byte of suffix
 	sa := bufs.sa
 	sortedByFirstByte(data, sa)

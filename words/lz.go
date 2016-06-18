@@ -2,7 +2,7 @@ package words
 
 type LzBuffers struct {
 	prev, next, stack []int
-	qsufsortBuffers
+	QSufSortBuffers
 }
 
 func (bufs *LzBuffers) Make(n int) {
@@ -10,11 +10,11 @@ func (bufs *LzBuffers) Make(n int) {
 	bufs.next = make([]int, n+1)
 	bufs.stack = make([]int, 1, n+2)
 
-	bufs.qsufsortBuffers.Make(n)
+	bufs.QSufSortBuffers.Make(n)
 }
 
 func calcNearest(s []byte, bufs *LzBuffers) ([]int, []int) {
-	sufArr := append(qsufsort(s, &bufs.qsufsortBuffers), -1)
+	sufArr := append(BitSufSort(s, &bufs.QSufSortBuffers), -1)
 
 	// prev and next have a fake zeroth element to handle -1 (endings) in the suffix array
 	prev := bufs.prev
