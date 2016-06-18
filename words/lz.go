@@ -2,7 +2,7 @@ package words
 
 type LzBuffers struct {
 	prev, next, stack []int
-	QSufSortBuffers
+	SufSortBuffers
 }
 
 func (bufs *LzBuffers) Make(n int) {
@@ -10,11 +10,11 @@ func (bufs *LzBuffers) Make(n int) {
 	bufs.next = make([]int, n+1)
 	bufs.stack = make([]int, 1, n+2)
 
-	bufs.QSufSortBuffers.Make(n)
+	bufs.SufSortBuffers.Make(n)
 }
 
-func calcNearest(s []byte, bufs *LzBuffers) ([]int, []int) {
-	sufArr := append(BitSufSort(s, &bufs.QSufSortBuffers), -1)
+func calcNearest(sufArr []int, bufs *LzBuffers) ([]int, []int) {
+	sufArr = append(sufArr, -1)
 
 	// prev and next have a fake zeroth element to handle -1 (endings) in the suffix array
 	prev := bufs.prev
@@ -36,19 +36,24 @@ func calcNearest(s []byte, bufs *LzBuffers) ([]int, []int) {
 	return prev[1:], next[1:]
 }
 
-func CountLz(s []byte, bufs *LzBuffers) int {
-	prev, next := calcNearest(s, bufs)
+func CountLz(s uint64, n int, bufs *LzBuffers) int {
+	sufArr := BitSufSort(s, n, &bufs.SufSortBuffers)
+	prev, next := calcNearest(sufArr, bufs)
 
-	n := len(s)
 	result := 0
+	begin := uint64(1) << uint(n-1)
 	for i := 0; i < n; {
 		jPrev, jNext := prev[i], next[i]
 		j := i
 		for {
-			if jPrev != -1 && (jPrev >= n || j >= n || s[jPrev] != s[j]) {
+			s_jPrev := s & (begin >> uint(jPrev)) != 0
+			s_jNext := s & (begin >> uint(jNext)) != 0
+			s_j := s & (begin >> uint(j)) != 0
+
+			if jPrev != -1 && (jPrev >= n || j >= n || s_jPrev != s_j) {
 				jPrev = -1
 			}
-			if jNext != -1 && (jNext >= n || j >= n || s[jNext] != s[j]) {
+			if jNext != -1 && (jNext >= n || j >= n || s_jNext != s_j) {
 				jNext = -1
 			}
 			if jPrev == -1 && jNext == -1 {
@@ -79,7 +84,8 @@ func Lz(s []byte) [][]byte {
 	bufs := new(LzBuffers)
 	bufs.Make(len(s))
 
-	prev, next := calcNearest(s, bufs)
+	sufArr := QSufSort(s, &bufs.SufSortBuffers)
+	prev, next := calcNearest(sufArr, bufs)
 
 	n := len(s)
 	result := make([][]byte, 0)

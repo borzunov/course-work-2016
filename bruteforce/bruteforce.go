@@ -10,29 +10,21 @@ import (
 )
 
 type Buffers struct {
-	s []byte
 	words.LzBuffers
 }
 
 func NewBuffers(n int) enumerator.Context {
 	result := new(Buffers)
-	result.s = make([]byte, n)
 	result.LzBuffers.Make(n)
 	return result
 }
 
-func invertWord(word []byte) {
-	for i := range word {
-		word[i] ^= 1
-	}
-}
-
 var resumeFromRepr = kingpin.Arg("resumeFrom", "Word to resume enumeration from").String()
 
-func check(s []byte, l, z int) {
+func check(s uint64, n int, l, z int) {
 	if l > z {
-		fmt.Println(words.ToRepr(s), l, z)
-		if l-z > 1 {
+		fmt.Println(words.BitsToRepr(s, n), l, z)
+		if l-z > 2 {
 			fmt.Printf("\tWarning! (%d)\n", l-z)
 		}
 	}
@@ -41,40 +33,39 @@ func check(s []byte, l, z int) {
 func main() {
 	kingpin.Parse()
 
-	startFrom := []byte{0, 0}
+	startWord, startWordLen := words.BitsFromRepr("00")
 	if *resumeFromRepr != "" {
-		startFrom = words.FromRepr(*resumeFromRepr)
+		startWord, startWordLen = words.BitsFromRepr(*resumeFromRepr)
 		log.Printf("Resumed from %s\n", *resumeFromRepr)
 	}
 
-	for length := len(startFrom); ; length++ {
+	for length := startWordLen; ; length++ {
 		fmt.Println("length =", length)
-		start := time.Now()
+		startTime := time.Now()
 
-		var startDigits []byte
-		if length == len(startFrom) {
-			startDigits = startFrom[:length-1]
+		curStartWord := uint64(0)
+		if length == startWordLen {
+			curStartWord = startWord >> 1
 		}
 
-		enumerator.EnumerateWords(length-1, 2, startDigits,
+		mask := (uint64(1) << uint(length)) - 1
+		enumerator.EnumerateBinaryWords(length-1, curStartWord,
 			func() enumerator.Context {
 				return NewBuffers(length)
 			},
-			func(prefix []byte, context enumerator.Context) {
+			func(prefix uint64, context enumerator.Context) {
 				bufs := context.(*Buffers)
-				s := bufs.s
-				copy(s, prefix)
-				s[length-1] = 0
+				s := prefix << 1
 
-				z := words.CountLz(s, &bufs.LzBuffers)
+				z := words.CountLz(s, length, &bufs.LzBuffers)
 
-				check(s, words.CountDifferentLyndonWords(s), z)
+				check(s, length, words.CountDifferentLyndonWords(s, length), z)
 
-				invertWord(s)
-				check(s, words.CountDifferentLyndonWords(s), z)
+				s ^= mask
+				check(s, length, words.CountDifferentLyndonWords(s, length), z)
 			})
 
-		seconds := time.Now().Sub(start).Seconds()
+		seconds := time.Now().Sub(startTime).Seconds()
 		if seconds > 10 {
 			fmt.Printf("\tTime: %.1f s\n", seconds)
 		}
