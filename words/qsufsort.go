@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// Modified 2016 Alexander Borzunov - Use static buffers
+
 // This algorithm is based on "Faster Suffix Sorting"
 //   by N. Jesper Larsson and Kunihiko Sadakane
 // paper: http://www.larsson.dogma.net/ssrev-tr.pdf
