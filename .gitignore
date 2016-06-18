@@ -1,6 +1,8 @@
 *.txt
 bruteforce/bruteforce
 show_decomp/show_decomp
+.ipynb_checkpoints
+comparison_with_c
 
 # Created by https://www.gitignore.io/api/go,pycharm
 
