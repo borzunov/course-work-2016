@@ -22,10 +22,6 @@ func CountDifferentLyndonWords(s uint64, n int) int {
 			k++
 		}
 
-		//for i <= j {
-		//	result = append(result, s[i:i+k-j])
-		//	i += k - j
-		//}
 		wLen := k - j
 		i += ((j-i)/wLen + 1) * wLen
 		result++

@@ -72,7 +72,6 @@ func CountLz(s uint64, n int, bufs *LzBuffers) int {
 			j++
 		}
 
-		//result = append(result, s[i:j])
 		result++
 
 		i = j
