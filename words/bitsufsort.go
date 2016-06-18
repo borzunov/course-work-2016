@@ -21,12 +21,7 @@ func (p bitSuffixInfo) Less(j1, j2 int) bool {
 	return offset1 > offset2
 }
 
-func BitSufSort(s []byte, bufs *QSufSortBuffers) []int {
-	bits := uint64(0)
-	for _, ch := range s {
-		bits = (bits << 1) | uint64(ch)
-	}
-	n := len(s)
+func BitSufSort(s uint64, n int, bufs *SufSortBuffers) []int {
 	mask := (uint64(1) << uint(n)) - 1
 
 	suffixes := bufs.sa
@@ -34,7 +29,7 @@ func BitSufSort(s []byte, bufs *QSufSortBuffers) []int {
 		suffixes[i] = i
 	}
 
-	info := bitSuffixInfo{bits, mask, suffixes}
+	info := bitSuffixInfo{s, mask, suffixes}
 	sort.Sort(info)
 	return info.suffixes
 }

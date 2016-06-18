@@ -1,6 +1,9 @@
 package words
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func FromRepr(repr string) []byte {
 	result := make([]byte, len(repr))
@@ -27,4 +30,21 @@ func ToDecompositionRepr(words [][]byte) string {
 		result[i] = ToRepr(word)
 	}
 	return strings.Join(result, " ")
+}
+
+func BitsFromRepr(repr string) (uint64, int) {
+	result, err := strconv.ParseUint(repr, 2, 64)
+	if err != nil {
+		panic(err)
+	}
+	return result, len(repr)
+}
+
+func BitsToRepr(s uint64, n int) string {
+	if n == 0 {
+		return ""
+	}
+
+	repr := strconv.FormatUint(s, 2)
+	return strings.Repeat("0", n-len(repr)) + repr
 }
