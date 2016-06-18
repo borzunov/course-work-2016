@@ -11,8 +11,14 @@ func (p bitSuffixInfo) Len() int      { return len(p.suffixes) }
 func (p bitSuffixInfo) Swap(i, j int) { p.suffixes[i], p.suffixes[j] = p.suffixes[j], p.suffixes[i] }
 
 func (p bitSuffixInfo) Less(j1, j2 int) bool {
-	offset1, offset2 := p.suffixes[j1], p.suffixes[j2]
-	return (p.bits<<uint(offset1))&p.mask < (p.bits<<uint(offset2))&p.mask
+	offset1 := p.suffixes[j1]
+	offset2 := p.suffixes[j2]
+	suf1 := (p.bits << uint(offset1)) & p.mask
+	suf2 := (p.bits << uint(offset2)) & p.mask
+	if suf1 != suf2 {
+		return suf1 < suf2
+	}
+	return offset1 > offset2
 }
 
 func BitSufSort(s []byte, bufs *QSufSortBuffers) []int {

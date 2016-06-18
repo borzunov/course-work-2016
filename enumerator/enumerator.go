@@ -44,16 +44,16 @@ func EnumerateWords(n int, base byte, startDigits []byte, newContext func() Cont
 		panic("wrong startDigits length")
 	}
 
-	threadExp := int(math.Ceil(math.Log2(float64(runtime.GOMAXPROCS(0)))))
+	threadExp := int(math.Ceil(math.Log(float64(runtime.GOMAXPROCS(0))) / math.Log(float64(base))))
 	if n < threadExp+2 {
 		bufs := newContext()
 		iterateMasksLinear(n, base, startDigits, func(s []byte) { f(s, bufs) })
 		return
 	}
+	remN := n - threadExp
 
 	var wg sync.WaitGroup
 	iterateMasksLinear(threadExp, base, nil, func(suffix []byte) {
-		remN := n - threadExp
 		digits := make([]byte, n)
 		copy(digits, startDigits)
 		copy(digits[remN:], suffix)
