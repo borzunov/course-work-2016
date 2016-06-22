@@ -26,8 +26,8 @@ func main() {
 	lyndon := words.Lyndon(s)
 	if n <= 1000 {
 		fmt.Println("ToRepr:", words.ToRepr(s))
-		fmt.Println("Lz:    ", words.ToDecompositionRepr(lz))
 		fmt.Println("Lyndon:", words.ToDecompositionRepr(lyndon))
+		fmt.Println("Lz:    ", words.ToDecompositionRepr(lz))
 		fmt.Println()
 	}
 	fmt.Println("countWD(lyndon):", countWithoutDuplicates(lyndon))
