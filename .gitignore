@@ -1,6 +1,7 @@
 *.aux
 *.log
-*.pdf
+*.dvi
+*.out
 
 bruteforce/bruteforce
 show_decomp/show_decomp

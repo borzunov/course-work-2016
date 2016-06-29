@@ -1,15 +1,33 @@
-\documentclass[a4paper]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[english,russian]{babel}
-\usepackage[margin=1in]{geometry}
-\usepackage{enumerate}
-\usepackage{amssymb}
-\usepackage{amsthm}
-\usepackage{amsmath}
-\usepackage{graphicx}
-\begin{document}
+\section{Полученные результаты}
 
-Интересные серии:
+\subsection{Слова, где $ L(S) > Z(S) $}
+
+С помощью перебора, описанного в предыдущем разделе, были проверены все бинарные слова длиной до 34 символов включительно. Оказалось, что самое короткое слово с данным свойством имеет длину 14. На проверенных длинах разность $ L(S) - Z(S) $ не превысила 2. Таблицы с кратчайшими словами, где $ L(S) > Z(S) $, и их количеством представлены в приложении A.
+
+Список всех найденных слов с данным свойством доступен по ссылке: \linebreak
+\url{https://raw.githubusercontent.com/borzunov/course-work-2016/master/bruteforce/result.txt}
+
+Простого закона для зависимости кол-ва слов длины $n$ с данным свойством от числа $n$ (рис. 1 ниже) найдено не было. По графику на рис. 2 можно предположить, что доля слов с данным свойством среди всех слов определённой длины стремится к нулю.
+
+\begin{figure}[h!]
+\begin{center}
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{word_count}
+\caption{Кол-во слов с указанными свойствами.}
+\label{pic:word_count}
+\end{minipage}
+\hfill 
+\begin{minipage}[h]{0.49\linewidth}
+\includegraphics[width=1\linewidth]{word_fraction}
+\caption{Доля слов с указанными свойствами среди всех слов заданной длины.}
+\label{pic:word_fraction}
+\end{minipage}
+\end{center}
+\end{figure}
+
+\subsection{Построенные серии строк}
+
+После поиска закономерностей в кратчайших словах с заданным свойством по аналогии были построены несколько серий строк, где $ L(S) $ существенно превышает $ Z(S) $. Тем не менее, во всех сериях не нарушается гипотеза о том, что $ L(S) = O( Z(S) ) $. Серии перечислены ниже:
 
 \begin{enumerate}
 
@@ -117,6 +135,3 @@
     $$ L(S_n) = 8 k - 4 \qquad Z(S_n) = 7 k - 6 \qquad \frac{L(S_n)}{Z(S_n)} \to \frac{8}{7} $$
 
 \end{enumerate}
-
-\end{document}
-
